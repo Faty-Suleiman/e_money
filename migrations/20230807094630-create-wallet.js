@@ -1,45 +1,36 @@
-"use strict";
-
-//const { DataTypes } = require("sequelize");
-
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Transactions", {
+    await queryInterface.createTable("Wallets", {
       id: {
         allowNull: false,
         autoIncrement: true,
         unique: true,
         type: Sequelize.INTEGER,
       },
-      transaction_id: {
+      wallet_id: {
         type: Sequelize.UUID,
         allowNull: false,
         primaryKey: true,
       },
-      user_id: {
+      user_id:{
         type: Sequelize.UUID,
         allowNull: false,
-    
       },
-      transaction_type: {
-        type: Sequelize.ENUM,
-        values:["credit", "debit"],
+      transaction_id:{
+        type: Sequelize.UUID,
         allowNull: false,
       },
-      transaction_status: {
-        type: Sequelize.ENUM,
-        values:["pending", "completed", "failed"],
-        defaultValue: "pending",
-        allowNull: false,
-      },
-      comment: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      amount: {
+      amount_before: {
         type: Sequelize.DOUBLE(10,2),
         allowNull: false,
+        defaultValue: 0
+      },
+      amount_after: {
+        type: Sequelize.DOUBLE(10,2),
+        allowNull: false,
+        defaultValue: 0
       },
       createdAt: {
         allowNull: false,
@@ -54,6 +45,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Transactions");
-  },
+    await queryInterface.dropTable('Wallets');
+  }
 };

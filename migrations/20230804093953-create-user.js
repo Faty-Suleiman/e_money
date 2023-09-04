@@ -18,111 +18,119 @@ module.exports = {
       },
 
       surname: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(100),
         allowNull: false,
       },
       othernames: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       email: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(100),
         unique: true,
         allowNull: false,
       },
+      phone: {
+        type: Sequelize.STRING(20),
+        allowNull: false
+      },
       password_hash: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       password_salt: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       gender: {
         type: Sequelize.ENUM,
-        values: ["Male", "Female", "Others"],
+        values:["Male", "Female", "Others"],
         allowNull: false,
       },
       dob: {
-        type: Sequelize.STRING,
+        type: Sequelize.DATE,
         allowNull: false,
       },
       address_number: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(70),
         allowNull: false,
       },
       address_street: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(70),
         allowNull: false,
       },
       address_city: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(70),
         allowNull: false,
       },
       address_state: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(70),
         allowNull: false,
       },
       localgovt: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(100),
         allowNull: false,
       },
       state_of_origin: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(100),
         allowNull: true,
       },
       marital_status: {
         type: Sequelize.ENUM,
-        values: ["Single", "Married", "Others"],
+        values:["Single", "Married", "Others"],
         allowNull: true,
+        defaultValue: 'Single'
       },
       nextofkin_surname: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(100),
         allowNull: true,
       },
       nextofkin_othernames: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(100),
         allowNull: true,
       },
       nextofkin_relationship: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(50),
         allowNull: true,
       },
       nextofkin_address_number: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(70),
         allowNull: true,
       },
       nextofkin_address_street: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(70),
         allowNull: true,
       },
       nextofkin_address_city: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(70),
         allowNull: true,
       },
       nextofkin_address_state: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(70),
         allowNull: true,
       },
       nin: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(11),
         allowNull: false,
       },
       bvn: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(11),
         allowNull: true,
       },
       isBvnVerified: {
         type: Sequelize.BOOLEAN,
         allowNull: true,
+        defaultValue:false
       },
       isNinVerified: {
         type: Sequelize.BOOLEAN,
         allowNull: true,
+        defaultValue: false
       },
       isPasswordChangeRequired: {
         type: Sequelize.BOOLEAN,
         allowNull: true,
+        defaultValue: false
       },
 
       createdAt: {
