@@ -1,3 +1,5 @@
+const { v4: uuidv4 } = require("uuid");
+const jwt = require("jsonwebtoken");
 const models = require("../models");
 const { Op } = require("sequelize");
 const { validateSignup, validateLogin } = require("../validations/index");
@@ -6,7 +8,7 @@ const {
   comparePassword,
   generateOtp,
 } = require("../utils/helpers");
-const { v4: uuidv4 } = require("uuid");
+
 const signUp = async (req, res) => {
   const { surname, othernames, email, password, phone, dob, nin } = req.body;
   try {
@@ -23,8 +25,8 @@ const signUp = async (req, res) => {
       surname,
       othernames,
       email,
-      password_hash: hash, //used password_hash in your db
-      password_salt: salt,
+      password_hash: hash, //used password_hash in your db you used passwordHash
+      password_salt: salt, // used password_salt in your db you used passwordSalt
       phone,
       dob,
       nin,
@@ -49,7 +51,6 @@ const signUp = async (req, res) => {
       message: "User successfully created",
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       status: false,
       message: error.message || "User failed to be created",
@@ -94,34 +95,36 @@ const signUp = async (req, res) => {
 //   }catch (error) {res.status(500).send('User deatils retrieved successfully') || error.message}}
 
 const login = async (req, res) => {
+  const { email, password } = req.body;
   try {
     const { error } = validateLogin(req.body);
-    if (error !== undefined) {
-      res.status(400).send(error.details[0].message);
-    }
-    const { email, password } = req.body;
-    if (!email || !password) {
-      res.status(400).send("Access denied");
-    }
+    if (error !== undefined) throw new Error(error.details[0].message);
     const user = await models.User.findOne({ where: { email: email } });
-    console.log(user);
-    if (user === null) {
-      return res.status(400).send("User not found");
-    }
-    const dataPayLoad = { email: user.email, _id: uuidv4() };
-    const checkPassword = await comparePassword(password, user.passwordHash);
-    if (!checkPassword.isOtpVerified) {
-      return res.status(401).send("Access denied");
-    }
-    const token = await jwt.verify(dataPayLoad, process.env.JWT_SCERET, {
-      expired: "1h",
+    console.log(user.dataValues);
+    if (user === null) throw new Error("User not found");
+    const dataPayLoad = {
+      email: user.email,
+      _id: uuidv4(),
+    };
+    const checkPassword = await comparePassword(password, user.password_hash);
+    if (!checkPassword) throw new Error(" invalid credentials");
+    //if (!checkPassword.isOtpVerified) throw new Error("Access denied"); you dont have isOtpVerified on your user's table
+    const token = await jwt.sign(dataPayLoad, process.env.JWT_SCERET, {
+      //jwt.sign not jwt.verify
+      expiresIn: "1h", //not  expired: "1h",
     });
     console.log(token, "im here!");
-    res
-      .status(200)
-      .send({ message: "user successfully logged in", user_id, email, token });
+    res.status(200).json({
+      status: true,
+      message: "user successfully logged in",
+      token,
+    });
   } catch (error) {
-    res.status(500).send(error.message || "Failed");
+    console.log(error);
+    res.status(500).json({
+      status: false,
+      message: error.message || "User failed to be created",
+    });
   }
 };
 
