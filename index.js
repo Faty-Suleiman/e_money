@@ -1,33 +1,23 @@
-require ('dotenv').config();
-const express = require('express');
-const cors = require('cors');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
 const { Op } = require("sequelize");
 const bodyParser = require("body-parser");
-const routes = require('./routes/index')
- const routeMap = require("express-routemap");
+const routes = require("./routes/index");
+const routeMap = require("express-routemap");
 
-const app = express()
-const port = process.env.PORT
-app.use(cors())
+const app = express();
+const port = process.env.PORT;
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/api/v1", routes);
-// app.use("/api/v1", routes)
 
-app.use('/', (req, res)=> {
-    return res.send('Hello World!')
-})
+app.use("/", (req, res) => {
+  return res.send("Hello World!");
+});
 
 app.listen(port, () => {
-    console.log(`U are listening on this http://localhost:${port}`);
-     routeMap(app);
-})
-
-
-
-
-
-
-
-
-
+  console.log(`server is listening on this http://localhost:${port}`);
+  routeMap(app);
+});

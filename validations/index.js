@@ -9,8 +9,9 @@ const validateSignup = (data) => {
     password: Joi.string().required(),
     repeat_password: Joi.string(),
     gender: Joi.string(),
-    dob: Joi.string(),
-    state_of_origin: Joi.string()
+    dob: Joi.string().required(),
+    state_of_origin: Joi.string(),
+    nin: Joi.string().required().min(11),
   });
   return schema.validate(data);
 };
@@ -18,10 +19,10 @@ const validateSignup = (data) => {
 const validateLogin = (data) => {
   const schema = Joi.object({
     email: Joi.string().required(),
-    password: Joi.string().required()
-  })
+    password: Joi.string().required(),
+  });
   return schema.validate(data);
-}
+};
 // const validateFaq = (data) => {
 //   const validateFaqSchema = Joi.object({
 //     title: joi.string().require(),

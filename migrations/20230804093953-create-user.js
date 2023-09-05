@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 //const { UUIDV4, DataTypes } = require('sequelize');
 
@@ -32,7 +32,7 @@ module.exports = {
       },
       phone: {
         type: Sequelize.STRING(20),
-        allowNull: false
+        allowNull: false,
       },
       password_hash: {
         type: Sequelize.TEXT,
@@ -44,7 +44,7 @@ module.exports = {
       },
       gender: {
         type: Sequelize.ENUM,
-        values:["Male", "Female", "Others"],
+        values: ["Male", "Female", "Others"],
         allowNull: false,
       },
       dob: {
@@ -53,23 +53,23 @@ module.exports = {
       },
       address_number: {
         type: Sequelize.STRING(70),
-        allowNull: false,
+        allowNull: true,
       },
       address_street: {
         type: Sequelize.STRING(70),
-        allowNull: false,
+        allowNull: true,
       },
       address_city: {
         type: Sequelize.STRING(70),
-        allowNull: false,
+        allowNull: true,
       },
       address_state: {
         type: Sequelize.STRING(70),
-        allowNull: false,
+        allowNull: true,
       },
       localgovt: {
         type: Sequelize.STRING(100),
-        allowNull: false,
+        allowNull: true,
       },
       state_of_origin: {
         type: Sequelize.STRING(100),
@@ -77,9 +77,9 @@ module.exports = {
       },
       marital_status: {
         type: Sequelize.ENUM,
-        values:["Single", "Married", "Others"],
+        values: ["Single", "Married", "Others"],
         allowNull: true,
-        defaultValue: 'Single'
+        defaultValue: "Single",
       },
       nextofkin_surname: {
         type: Sequelize.STRING(100),
@@ -110,27 +110,27 @@ module.exports = {
         allowNull: true,
       },
       nin: {
-        type: Sequelize.STRING(11),
+        type: Sequelize.STRING(20),
         allowNull: false,
       },
       bvn: {
-        type: Sequelize.STRING(11),
+        type: Sequelize.STRING(20),
         allowNull: true,
       },
       isBvnVerified: {
         type: Sequelize.BOOLEAN,
         allowNull: true,
-        defaultValue:false
+        defaultValue: false,
       },
       isNinVerified: {
         type: Sequelize.BOOLEAN,
         allowNull: true,
-        defaultValue: false
+        defaultValue: false,
       },
       isPasswordChangeRequired: {
         type: Sequelize.BOOLEAN,
         allowNull: true,
-        defaultValue: false
+        defaultValue: false,
       },
 
       createdAt: {
@@ -146,6 +146,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Users');
-  }
+    await queryInterface.dropTable("Users");
+  },
 };

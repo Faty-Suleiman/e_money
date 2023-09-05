@@ -1,61 +1,59 @@
 const models = require("../models");
-const { Op, where } = require("sequelize");
+const { Op } = require("sequelize");
 const { validateSignup, validateLogin } = require("../validations/index");
-const {
-  generateToken,
-  authentication,
-} = require("../middleWares/authentication");
 const {
   hashPassword,
   comparePassword,
   generateOtp,
-  validatePhone,
 } = require("../utils/helpers");
 const { v4: uuidv4 } = require("uuid");
-const user = require("../models/user");
 const signUp = async (req, res) => {
-  const { surname, othernames, email, password, phone } = req.body;
+  const { surname, othernames, email, password, phone, dob, nin } = req.body;
   try {
     const { error } = validateSignup(req.body);
-    if (error !== undefined) { 
-      res.status(400).send(error.details[0].message);
-    }
+    if (error !== undefined) throw new Error(error.details[0].message);
     const user = await models.User.findOne({
-
       where: { [Op.or]: { email: email } },
     });
-    if (user) {
-      res.status(400).send("user already exist");
-    }
+    if (user) throw new Error("user already exist");
     const { hash, salt } = await hashPassword(password);
-    console.log(hash, salt)
+    const user_id = uuidv4(); // i kept the user_id variable here because it is also needed in th wallet table
     const newUser = await models.User.create({
-      user_id: uuidv4(),
+      user_id: user_id, //see info at declaration
       surname,
       othernames,
       email,
-      passwordHash: hash,
-      passwordSalt: salt,
+      password_hash: hash, //used password_hash in your db
+      password_salt: salt,
       phone,
+      dob,
+      nin,
     });
 
-    console.log(newUser.json());
     await models.Wallet.create({
       wallet_id: uuidv4(),
-      user_id: user,
+      user_id: user_id,
+      transaction_id: uuidv4(), //transaction_id is required and you did not pass it
     });
     // credit(200, user_id, `Wallet funding for sighup credit `);
     const otp = generateOtp(4);
-    const insertData = {
+
+    await models.Otp.create({
       otp_id: uuidv4(),
       email_or_phone: email,
       otp: otp,
-    };
-    await models.Otp.create(insertData);
+    });
     // sendEmail(email, "OTP", `Hey ${surname}, your otp is ${otp}`);
-    res.status(201).send("User successfully created"), newUser;
+    res.status(201).json({
+      status: true,
+      message: "User successfully created",
+    });
   } catch (error) {
-    res.status(500).send(error.message || "User failed to be created");
+    console.log(error);
+    res.status(500).json({
+      status: false,
+      message: error.message || "User failed to be created",
+    });
   }
 };
 
@@ -95,23 +93,37 @@ const signUp = async (req, res) => {
 //     res.status(200).send('User updated successfully')
 //   }catch (error) {res.status(500).send('User deatils retrieved successfully') || error.message}}
 
-const login = async(req, res) => {
-  try{
+const login = async (req, res) => {
+  try {
     const { error } = validateLogin(req.body);
     if (error !== undefined) {
-      res.status(400).send(error.details[0].message)};
-const {email, password} = req.body
-if(!email || !password){res.status(400).send('Access denied')}
-const user = await models.User.findOne({where:{email: email}})
-console.log(user)
-  if(user === null){return res.status(400).send('User not found')}
-  const dataPayLoad = {email: user.email,_id: uuidv4()}
-  const checkPassword = await comparePassword(password, user.passwordHash)
-  if(!checkPassword.isOtpVerified){return res.status(401).send('Access denied')}
-  const token = await jwt.verify(dataPayLoad,process.env.JWT_SCERET, {expired: '1h'})
-  console.log(token, 'im here!')
-  res.status(200).send({message:'user successfully logged in', user_id, email, token})
-} catch (error){res.status(500).send( error.message || 'Failed')}}
+      res.status(400).send(error.details[0].message);
+    }
+    const { email, password } = req.body;
+    if (!email || !password) {
+      res.status(400).send("Access denied");
+    }
+    const user = await models.User.findOne({ where: { email: email } });
+    console.log(user);
+    if (user === null) {
+      return res.status(400).send("User not found");
+    }
+    const dataPayLoad = { email: user.email, _id: uuidv4() };
+    const checkPassword = await comparePassword(password, user.passwordHash);
+    if (!checkPassword.isOtpVerified) {
+      return res.status(401).send("Access denied");
+    }
+    const token = await jwt.verify(dataPayLoad, process.env.JWT_SCERET, {
+      expired: "1h",
+    });
+    console.log(token, "im here!");
+    res
+      .status(200)
+      .send({ message: "user successfully logged in", user_id, email, token });
+  } catch (error) {
+    res.status(500).send(error.message || "Failed");
+  }
+};
 
 // //wallet
 // // const credit = async(amount_passed, user_id, comment) => {

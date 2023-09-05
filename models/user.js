@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -15,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   User.init(
     {
-      user_id: DataTypes.UUID(),
+      user_id: DataTypes.UUID, //no bracket after the uuid
       surname: DataTypes.STRING,
       othernames: DataTypes.STRING,
       email: DataTypes.STRING,
@@ -39,6 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       nextofkin_address_street: DataTypes.STRING,
       nextofkin_address_city: DataTypes.STRING,
       nextofkin_address_state: DataTypes.STRING,
+      nin: DataTypes.STRING, //you did;nt put nin here and it is a required filed on db
       bvn: DataTypes.STRING,
       isBvnVerified: DataTypes.BOOLEAN,
       isNinVerified: DataTypes.BOOLEAN,
