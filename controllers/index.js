@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
 const models = require("../models");
@@ -73,17 +75,22 @@ const signUp = async (req, res) => {
 //   } catch (error) {res.status(500).send('') || error.message}
 //   }
 
-// const getUserDetails = async(req, res) => {
-//   const {user_id} = req.params
-//   if(!user_id) throw new error('')
-//   try{
-//   const user = await models.User.findOne({
-// attributes: ['username', 'firstname', 'phone'],
-// where: {email: email}})
-// if(!user) throw new error('')
-// res.status(200).send('')
-//   }catch (error) {res.status(500).send('User deatils retrieved successfully') || error.message}}
-
+const getUserDetails = async(req, res) => {
+  const {user_id} = req.params
+  if(!user_id) throw new error('User doent exist')
+  try{
+  const user = await models.User.findOne({
+attributes: ['username', 'firstname', 'phone'],
+where: {email: email}})
+if(!user) throw new error('User failed')
+res.status(200).json({
+  status: true,
+  message: "User's deatils retrieved successfully",
+  user
+});
+  }catch (error) {res.status(500).json({
+    status: false,
+    message:  error.message || "User's details failed "})}}
 //   updateUserProfile = async(req, res) => {
 //     const {user_id} = req.params
 //     if(!user_id) throw new error('')
@@ -113,7 +120,7 @@ const login = async (req, res) => {
       //jwt.sign not jwt.verify
       expiresIn: "1h", //not  expired: "1h",
     });
-    console.log(token, "im here!");
+    // console.log(process.env.JWT_SCERET);
     res.status(200).json({
       status: true,
       message: "user successfully logged in",
@@ -212,4 +219,4 @@ const login = async (req, res) => {
 //   // }
 
 // module.exports = { signUp, login , userBalance,credit,debit, transaction};
-module.exports = { signUp, login };
+module.exports = { signUp, login, getUserDetails };
